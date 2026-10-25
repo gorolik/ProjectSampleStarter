@@ -36,12 +36,6 @@ namespace Sources.Services.Input
             return new Vector3(input.x, input.y, 0);
         }
 
-        public Vector3 GetRotationDirection() => 
-            new(0, 0, _inputActions.Player.Roll.ReadValue<float>());
-
-        public float GetManipulatorRotationAxis() => 
-            _inputActions.Player.ManipulatorRotation.ReadValue<float>();
-
         public bool IsCursorLockButtonPerformed() => 
             _inputActions.Player.SwitchCursorState.WasPerformedThisFrame();
 

@@ -12,8 +12,6 @@ namespace Sources.Services.Input
         
         Vector2 GetLookDirection();
         Vector3 GetMoveDirection();
-        Vector3 GetRotationDirection();
-        float GetManipulatorRotationAxis();
         bool IsCursorLockButtonPerformed();
         
         bool IsFireDown();

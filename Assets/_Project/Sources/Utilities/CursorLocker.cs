@@ -1,6 +1,8 @@
 using System;
 using Sources.Infrastructure;
 using Sources.Services.Input;
+using Sources.Services.Windows;
+using Sources.UI.WindowsSystem;
 using UnityEngine;
 
 namespace Sources.Utilities
@@ -16,14 +18,23 @@ namespace Sources.Utilities
         private bool _isLocked;
         private bool _beforeWindowState;
         private IInputService _inputService;
+        private WindowService _windowService;
 
         public bool IsLocked => _isLocked;
         
-        private void Awake() => 
+        private void Awake()
+        {
             _inputService = Locator.G.InputService;
+            _windowService = Locator.G.WindowService;
+        }
 
-        private void Start() => 
+        private void Start()
+        {
             Initialize();
+
+            _windowService.OnWindowEnabled += OnWindowEnabled;
+            _windowService.OnWindowClosed += OnWindowClosed;
+        }
 
         private void Initialize() =>
             SetCursorLock(_lockAtStart);
@@ -32,6 +43,12 @@ namespace Sources.Utilities
         {
             if (_unlockAtDestroy)
                 SetCursorLock(false);
+
+            if (_windowService != null)
+            {
+                _windowService.OnWindowEnabled -= OnWindowEnabled;
+                _windowService.OnWindowClosed -= OnWindowClosed;
+            }
         }
 
         private void Update()
@@ -60,5 +77,14 @@ namespace Sources.Utilities
 
             CursorStateChanged?.Invoke(_isLocked);
         }
+
+        private void OnWindowClosed(WindowBase window)
+        {
+            if (_windowService.OpenedWindows.Count == 0) 
+                SetCursorLock(_beforeWindowState, true);
+        }
+
+        private void OnWindowEnabled(WindowBase window) => 
+            SetCursorLock(!window.ShouldUnlockCursor, true);
     }
 }
